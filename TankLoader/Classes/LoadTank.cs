@@ -7,38 +7,30 @@ namespace TankLoader.Classes
 {
     class LoadTank
     {
-        private int? vol = null;
+        private int? vol;
+        private MaterialType? materialType;
+        private WeightingTank weightTank;
 
-        private MaterialType? materialType = null;
-
-        private bool tankIsEmpty = true;
-
-        //public LoadTank( int volume, string name, MaterialType material) : base( volume, name, material )
-        //{
-
-        //}      
-        
-        public bool Load(int tankVolume, MaterialType materialForLoad)
+        public LoadTank(WeightingTank weightingTank)
         {
-            if ( materialType is null || vol is null )
-            {
-                this.vol = tankVolume;
-                this.materialType = materialForLoad;
+            this.weightTank = weightingTank;
+        }
 
-                tankIsEmpty = false;
-                return tankIsEmpty;
-            }
-                else if (materialType.HasValue && vol.HasValue)
-            {
-                tankIsEmpty = false;
-                return tankIsEmpty;
-            }
-            else
-            {
-                tankIsEmpty = true;
-                return tankIsEmpty;
-            }
-            
+        public void Load ( int tankVolume, MaterialType materialForLoad )
+        {
+            this.vol = tankVolume;
+            this.materialType = materialForLoad;
+
+            AutoUnload();
+        }
+
+        private void AutoUnload()
+        {
+            weightTank.volume = ( int ) this.vol;            
+            this.vol = null;
+
+            weightTank.material = ( MaterialType ) this.materialType;
+            this.materialType = null;
         }
     }
 }

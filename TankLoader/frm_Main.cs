@@ -13,9 +13,9 @@ namespace TankLoader
         public frm_Main()
         {
             InitializeComponent();
-
-            loadTank = new LoadTank();
+            
             weightingTank = new WeightingTank();
+            loadTank = new LoadTank(weightingTank);
         }
 
         /*
@@ -54,11 +54,8 @@ namespace TankLoader
 
         private void FullTank(int volume, MaterialType material )
         {
-            bool isEmpty = loadTank.Load( volume, material );
-            MessageBox.Show( $"Tank is Empty - {isEmpty}" );
-
-            //LoadTank loaderTank = new LoadTank( volume, "Loader Tank", ( MaterialType ) cmbBx_materialType.SelectedIndex );
-            //loaderTank.SpeakAboutYourself();
+            weightingTank.ClearTank();
+            loadTank.Load( volume, material );
         }
     }
 }
