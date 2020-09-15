@@ -7,55 +7,58 @@ namespace TankLoader
 {
     public partial class frm_Main : Form
     {
+        // Создаем переменные для объектов бункеров
         LoadTank loadTank;
         WeightingTank weightingTank;
 
         public frm_Main()
         {
             InitializeComponent();
-            
+
+            // Выделяем память ( создаем объекты ) для загрузочного и весового бункеров при создании формы
+            loadTank = new LoadTank();
             weightingTank = new WeightingTank();
-            loadTank = new LoadTank(weightingTank);
         }
 
-        /*
-         +1. Создаем пустые бункеры загрузки и взвешивания
-         +2. На форме выбираем материал, загружаем в первый бункер
-         3. Материал сохраняется в первый бункер, и передается во второй
-         4. Во втором бункере проводится проверка, если он уже занят, то взвешиваем текущий материал
-        */
 
         private void btn_LoadWeightTank_Click(object sender, EventArgs e)
-        {            
-            StartLoadTank();
-
-            //LoadTank loader = new LoadTank(200, "Loader Tank", MaterialType.CaC2 );
-            //loader.SpeakAboutYourself();
-            //loader.Load();
-            //loader.Unload();            
-
-            //WeightingTank weighter = new WeightingTank(500, "Weighter Tank", MaterialType.CaMg );
-            //weighter.SpeakAboutYourself();
-            //weighter.Load();
-            //weighter.Unload();
-        }
-
-        private void StartLoadTank()
         {
-            if ( cmbBx_materialType.SelectedIndex < 0 || maskTxtBx_tankVolume.TextLength < 3 )
-                MessageBox.Show("Необходимо указать тип загружаемого в бункер материала !");
-            else if ( maskTxtBx_tankVolume.Text == "" || Convert.ToInt32(maskTxtBx_tankVolume.Text) < 100 )                
-                MessageBox.Show( "Некорректный объем бункера, минимальный объем = 100 m3 !" );
+            // Вызываем метод проверки данных при нажатии кнопки на форме
+            CheckInfo();
+        }
+        /// <summary>
+        /// Метод проверяет заполнение элементов на форме
+        /// </summary>
+        private void CheckInfo()
+        {            
+            if ( cmbBx_materialType.SelectedIndex < 0 )
+                MessageBox.Show("Необходимо указать тип загружаемого в бункер материала !");            
             else
             {
-                FullTank(Convert.ToInt32(maskTxtBx_tankVolume.Text), ( MaterialType ) cmbBx_materialType.SelectedIndex );
+                FullTank(( MaterialType ) cmbBx_materialType.SelectedIndex );
             }
         }
+        /// <summary>
+        /// Метод загрузки материала в бункер
+        /// </summary>
+        /// <param name="material">Загружаемый в бункер материал</param>
+        private void FullTank(MaterialType material )
+        {
+            try {
+                // Принимаем материал в бункер
+                loadTank.MaterialType = material;
+                // Передаем материал в весовой бункер
+                loadTank.Load(weightingTank);
+                
+                MessageBox.Show($"Вес материала: {weightingTank.Material} - { weightingTank.MaterialWeight.ToString()}");
+            }
+            catch (Exception exception) { MessageBox.Show(exception.Message,"Attention!",MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
 
-        private void FullTank(int volume, MaterialType material )
+        private void btn_UnloadWeightTank_Click(object sender, EventArgs e)
         {
             weightingTank.ClearTank();
-            loadTank.Load( volume, material );
+            MessageBox.Show("Весовой бункер успешно очищен!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

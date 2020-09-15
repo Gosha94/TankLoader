@@ -1,45 +1,53 @@
 ﻿using TankLoader.Enums;
-using TankLoader.Abstracts;
 using System;
+using System.Windows.Forms;
 
 namespace TankLoader.Classes
 {
     class WeightingTank
     {
-        private bool isEmpty;
-        public bool IsEmpty { get { return isEmpty; } }
-        public int? volume { get; set; }
-        public MaterialType? material { get; set; }        
-        public int? MaterialWeight { get { return materialWeight; } }
-
         private int? materialWeight;
-
+        
+        private MaterialType? material;
+        public MaterialType? Material
+        { 
+            get { return material; } 
+            set
+            {
+                // Обработка повторной загрузки бункера, если не пустой, выдаем исключение
+                if (material != null && material != value)
+                {
+                    throw new Exception("Принять новый метериал невозможно! Освободите весовой бункер!");
+                }
+                // в других случаях загружаем материал в весовой бункер
+                material = value;
+            }
+        }
+        
+        public int? MaterialWeight { get { DetermineWeight(); return materialWeight; } }        
+        Random rand;
+        /// <summary>
+        /// Метод очистки бункера от материала
+        /// </summary>
         public void ClearTank()
         {
-            this.volume = null;
-            this.material = null;
-
-            isEmpty = true;
-        }
-        private void ClearWeight()
-        {
-            materialWeight = null;
-        }
-
+            this.material = null;            
+        }       
+        /// <summary>
+        /// Метод вычисляет вес загруженного в него материала
+        /// </summary>
         private void DetermineWeight()
         {
             ClearWeight();
-            this.materialWeight = ( int ) Math.Pow ( ( int ) this.volume, ( int ) this.material );
+            rand = new Random();            
+            this.materialWeight = ( int ) rand.Next ( 100, 800 );
         }
-
-        public int? PerformWeighting()
+        /// <summary>
+        /// Метод обнуления весов перед взвешиванием
+        /// </summary>        
+        private void ClearWeight()
         {
-            if (isEmpty)
-            {
-                DetermineWeight();
-                return materialWeight;
-            }
-            else { return null; }
+            materialWeight = null;
         }
 
     }

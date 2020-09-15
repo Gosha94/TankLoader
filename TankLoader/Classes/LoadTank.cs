@@ -1,36 +1,36 @@
 ﻿using System;
 using System.Windows.Forms;
-using TankLoader.Abstracts;
 using TankLoader.Enums;
 
 namespace TankLoader.Classes
 {
     class LoadTank
-    {
-        private int? vol;
+    {        
         private MaterialType? materialType;
-        private WeightingTank weightTank;
-
-        public LoadTank(WeightingTank weightingTank)
+        public MaterialType? MaterialType 
         {
-            this.weightTank = weightingTank;
+            get { return materialType; } 
+            set 
+            {
+                this.materialType = value;
+            } 
         }
-
-        public void Load ( int tankVolume, MaterialType materialForLoad )
+        /// <summary>
+        /// Метод загрузки бункера материалом
+        /// </summary>        
+        public void Load (WeightingTank weightingTank)
         {
-            this.vol = tankVolume;
-            this.materialType = materialForLoad;
-
+            // Загружаем в весовой бункер материал
+            weightingTank.Material = materialType;
+            // Разгружаем загрузочный бункер
             AutoUnload();
-        }
-
+        }        
+        /// <summary>
+        /// Метод автоматической рагрузки бункера после 
+        /// </summary>
         private void AutoUnload()
         {
-            weightTank.volume = ( int ) this.vol;            
-            this.vol = null;
-
-            weightTank.material = ( MaterialType ) this.materialType;
-            this.materialType = null;
+            this.materialType = null;            
         }
     }
 }
